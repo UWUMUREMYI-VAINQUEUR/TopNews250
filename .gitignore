@@ -1,0 +1,22 @@
+# dependencies
+node_modules
+
+# env
+.env
+
+# build
+dist
+build
+
+# python
+__pycache__
+*.pyc
+venv
+
+# logs
+logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
