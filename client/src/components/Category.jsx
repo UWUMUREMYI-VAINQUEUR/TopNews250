@@ -14,6 +14,11 @@ import {
 } from 'react-icons/fa';
 
 /* =======================
+   API BASE URL
+======================= */
+const API = import.meta.env.VITE_API_URL;
+
+/* =======================
    Category Icons
 ======================= */
 const categoryIcons = {
@@ -36,7 +41,7 @@ const Categories = () => {
   ======================= */
   useEffect(() => {
     axios
-      .get('http://localhost:5000/api/categories')
+      .get(`${API}/api/categories`)
       .then((res) => {
         setCategories(res.data);
       })
@@ -71,7 +76,6 @@ const Categories = () => {
       ======================= */}
       <section className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Loading */}
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {[...Array(8)].map((_, index) => (

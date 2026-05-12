@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+/* =======================
+   API BASE URL
+======================= */
+const API = import.meta.env.VITE_API_URL;
+
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +17,7 @@ const Notifications = () => {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await axios.get("http://localhost:5000/api/notifications", {
+        const res = await axios.get(`${API}/api/notifications`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -31,7 +36,7 @@ const Notifications = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        "http://localhost:5000/api/notifications/read",
+        `${API}/api/notifications/read`,
         { notification_id: id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -58,7 +63,7 @@ const Notifications = () => {
         <ul className="space-y-3">
           {notifications.map((n) => {
             const fromUser = n.sender_name || "Unknown";
-            const senderId = n.data.from_user_id; // optional if you want profile link
+            const senderId = n.data.from_user_id;
             const createdAt = new Date(n.created_at).toLocaleString();
 
             return (

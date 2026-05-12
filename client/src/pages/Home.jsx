@@ -10,6 +10,11 @@ import {
 } from 'react-icons/fa';
 
 /* =======================
+   API BASE URL
+======================= */
+const API = import.meta.env.VITE_API_URL;
+
+/* =======================
    CATEGORY ICONS
 ======================= */
 const categoryIcons = {
@@ -52,14 +57,14 @@ const Home = () => {
 
   /* FETCH CATEGORIES */
   useEffect(() => {
-    axios.get('http://localhost:5000/api/categories')
+    axios.get(`${API}/api/categories`)
       .then(res => setCategories(res.data))
       .catch(console.error);
   }, []);
 
   /* FETCH TRENDING */
   useEffect(() => {
-    axios.get('http://localhost:5000/api/posts?limit=5')
+    axios.get(`${API}/api/posts?limit=5`)
       .then(res => setTrending(res.data))
       .catch(console.error);
   }, []);
@@ -71,7 +76,7 @@ const Home = () => {
 
     const offset = reset ? 0 : page * limit;
 
-    let url = `http://localhost:5000/api/posts?limit=${limit}&offset=${offset}`;
+    let url = `${API}/api/posts?limit=${limit}&offset=${offset}`;
     if (selectedCategory) url += `&category=${selectedCategory}`;
     if (searchTerm) url += `&search=${encodeURIComponent(searchTerm)}`;
 
@@ -100,7 +105,7 @@ const Home = () => {
   const handleFollow = async (authorId) => {
     const token = localStorage.getItem('token');
     await axios.post(
-      'http://localhost:5000/api/followers/follow',
+      `${API}/api/followers/follow`,
       { followed_user_id: authorId },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -112,7 +117,7 @@ const Home = () => {
   const handleUnfollow = async (authorId) => {
     const token = localStorage.getItem('token');
     await axios.post(
-      'http://localhost:5000/api/followers/unfollow',
+      `${API}/api/followers/unfollow`,
       { followed_user_id: authorId },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -228,11 +233,7 @@ const Home = () => {
           {posts.map(post => (
             <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 flex flex-col">
 
-              {/* =====================
-                  AUTHOR ROW
-                  author + author_avatar_url now come from
-                  LEFT JOIN users in postController listPosts
-              ===================== */}
+              {/* AUTHOR ROW */}
               <div className="flex items-center gap-2 mb-2">
                 <img
                   src={post.author_avatar_url || TOPNEWS_AVATAR}
@@ -248,9 +249,7 @@ const Home = () => {
                 </span>
               </div>
 
-              {/* =====================
-                  POST IMAGE
-              ===================== */}
+              {/* POST IMAGE */}
               {post.image_url ? (
                 <img
                   src={cloudinaryTransform(post.image_url)}

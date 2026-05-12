@@ -19,6 +19,11 @@ import {
   FaBookmark, FaRegBookmark, FaShareAlt,
 } from 'react-icons/fa';
 
+/* =======================
+   API BASE URL
+======================= */
+const API = import.meta.env.VITE_API_URL;
+
 export default function PostDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -92,7 +97,7 @@ export default function PostDetails() {
 
   const checkBookmark = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/bookmarks', {
+      const res = await fetch(`${API}/api/bookmarks`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
       const bookmarks = await res.json();
@@ -214,45 +219,49 @@ export default function PostDetails() {
 
   /* =====================================================
      SMART PARAGRAPH SPLITTER
-     Handles:
-     1. HTML with <p> tags
-     2. Plain text with sentence endings (. ! ?)
-     3. Long single blocks — split every ~400 chars at sentence boundary
   ===================================================== */
   const splitIntoParagraphs = (html) => {
     if (!html) return [];
 
-    // Parse HTML
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const pTags = doc.querySelectorAll('p');
 
-    // Case 1: Has proper <p> tags with content
+    // Case 1: Has proper <p> tags
     if (pTags.length > 1) {
       return Array.from(pTags)
         .map((p) => p.textContent.trim())
         .filter((t) => t.length > 0);
     }
 
-    // Case 2: One big block or plain text — split smartly
-    // Get plain text
+    // Case 2: Plain text — split smartly
     const rawText = doc.body.textContent || html.replace(/<[^>]+>/g, '');
 
-    // Split on sentence endings followed by capital letter or end
-    // This handles cases like "...to justice.The new president..."
     const sentences = rawText
-      .replace(/([.!?])\s*([A-Z])/g, '$1\n$2')  // add break after sentence
+      .replace(/([.!?])\s*([A-Z])/g, '$1\n$2')
       .split('\n')
       .map((s) => s.trim())
-      .filter((s) => s.length > 20); // ignore very short fragments
+      .filter((s) => s.length > 10); // relaxed from 20
 
-    // Group sentences into paragraphs of ~2-3 sentences each
+    // Hard fallback: if no sentences found, chunk every ~500 chars
+    if (sentences.length === 0) {
+      const chunks = [];
+      let remaining = rawText.trim();
+      while (remaining.length > 0) {
+        if (remaining.length <= 500) { chunks.push(remaining); break; }
+        let cut = remaining.lastIndexOf(' ', 500);
+        if (cut === -1) cut = 500;
+        chunks.push(remaining.slice(0, cut).trim());
+        remaining = remaining.slice(cut).trim();
+      }
+      return chunks;
+    }
+
+    // Group sentences into paragraphs of ~3 sentences each
     const paragraphs = [];
     let current = '';
 
-    sentences.forEach((sentence, i) => {
+    sentences.forEach((sentence) => {
       current += (current ? ' ' : '') + sentence;
-
-      // Make a new paragraph every 2-3 sentences or if text is long enough
       const sentenceCount = (current.match(/[.!?]/g) || []).length;
       if (sentenceCount >= 3 || current.length > 400) {
         paragraphs.push(current.trim());
@@ -260,10 +269,7 @@ export default function PostDetails() {
       }
     });
 
-    // Push remaining text
-    if (current.trim()) {
-      paragraphs.push(current.trim());
-    }
+    if (current.trim()) paragraphs.push(current.trim());
 
     return paragraphs.filter((p) => p.length > 0);
   };
@@ -275,16 +281,13 @@ export default function PostDetails() {
     const paragraphs = splitIntoParagraphs(post.body);
 
     if (paragraphs.length === 0) {
-      return (
-        <p className="text-gray-500 italic">No content available.</p>
-      );
+      return <p className="text-gray-500 italic">No content available.</p>;
     }
 
     const elements = [];
 
     paragraphs.forEach((text, index) => {
 
-      // PARAGRAPH
       elements.push(
         <p
           key={`p-${index}`}
@@ -346,9 +349,7 @@ export default function PostDetails() {
         <FaArrowLeft /> Back to News
       </Link>
 
-      {/* =====================================================
-          POST HEADER
-      ===================================================== */}
+      {/* POST HEADER */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white leading-snug mb-4">
           {post.title}
@@ -413,9 +414,7 @@ export default function PostDetails() {
         </figure>
       )}
 
-      {/* =====================================================
-          ACTION BAR
-      ===================================================== */}
+      {/* ACTION BAR */}
       <div className="flex flex-wrap gap-3 mb-10 p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
 
         <button
@@ -476,16 +475,12 @@ export default function PostDetails() {
         </button>
       </div>
 
-      {/* =====================================================
-          BLOG CONTENT WITH ADS + PULL QUOTE
-      ===================================================== */}
+      {/* BLOG CONTENT WITH ADS + PULL QUOTE */}
       <article className="mb-12">
         {renderBlogContent()}
       </article>
 
-      {/* =====================================================
-          COMMENTS
-      ===================================================== */}
+      {/* COMMENTS */}
       <div className="border-t dark:border-gray-700 pt-10">
         <h2 className="text-2xl font-bold mb-6">
           💬 Comments ({comments.length})
@@ -523,7 +518,6 @@ export default function PostDetails() {
           </button>
         </div>
 
-        {/* AD between input and comments */}
         <AdSlot label="Advertisement" />
 
         <div className="mt-2 space-y-5">

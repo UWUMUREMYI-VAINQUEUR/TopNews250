@@ -2,12 +2,16 @@ import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { getNotifications } from '../services/api';
 
+/* =======================
+   API BASE URL
+======================= */
+const API = import.meta.env.VITE_API_URL;
+
 export default function useNotifications(user) {
   const [socket, setSocket] = useState(null);
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // load saved notifications
     async function load() {
       try {
         const res = await getNotifications();
@@ -19,7 +23,7 @@ export default function useNotifications(user) {
 
   useEffect(() => {
     if (!user) return;
-    const s = io('http://localhost:5000', { transports: ['websocket'] });
+    const s = io(API, { transports: ['websocket'] });
     setSocket(s);
 
     s.on('connect', () => {
