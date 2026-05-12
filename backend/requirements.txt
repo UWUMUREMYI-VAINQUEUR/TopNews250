@@ -11,3 +11,4 @@ lxml_html_clean
 groq
 Pillow
 huggingface_hub
+langdetect
