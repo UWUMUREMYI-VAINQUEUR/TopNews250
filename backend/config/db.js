@@ -1,16 +1,21 @@
 const { Pool } = require('pg');
 require('dotenv').config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 const pool = new Pool({
-  user: process.env.DB_USER,       // e.g. root
-  host: process.env.DB_HOST,       // e.g. localhost
-  database: process.env.DB_DATABASE,// e.g. tnews
-  password: process.env.DB_PASSWORD,// e.g. sv2006
-  port: process.env.DB_PORT,       // e.g. 5432
+  connectionString: process.env.DATABASE_URL,
+
+  // Render PostgreSQL requires SSL
+  ssl: isProduction
+    ? {
+        rejectUnauthorized: false,
+      }
+    : false,
 });
 
 pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+  console.error('Unexpected error on idle PostgreSQL client', err);
   process.exit(-1);
 });
 
