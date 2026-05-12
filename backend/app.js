@@ -17,13 +17,20 @@ const userRoutes         = require('./routes/userRoutes');
 const categoryRoutes     = require('./routes/categoryRoutes');
 const tagRoutes          = require('./routes/tagRoutes');
 const profileRoutes      = require('./routes/profileRoutes');
-const adminRoutes        = require('./routes/adminRoutes'); // ← only once
+const adminRoutes        = require('./routes/adminRoutes');
 
 // ----------------------------------
 // CORS
 // ----------------------------------
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: [
+    process.env.FRONTEND_URL,
+    'https://www.topnews250.com',
+    'https://topnews250.com',
+    'https://topnews250.vercel.app',
+    'https://topnews-frontend.onrender.com',
+    'http://localhost:5173',
+  ].filter(Boolean),
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
