@@ -1,5 +1,19 @@
 {
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/post/:id",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(facebookexternalhit|whatsapp|twitterbot|linkedinbot|slackbot|telegrambot|discordbot).*"
+        }
+      ],
+      "destination": "https://topnews250.onrender.com/share/post/:id",
+      "permanent": false
+    }
   ]
 }
