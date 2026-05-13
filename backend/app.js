@@ -22,7 +22,6 @@ const ogRoute            = require('./routes/ogRoute');
 
 // ----------------------------------
 // OG Share Route — BEFORE CORS
-// So WhatsApp/Facebook crawlers are never blocked
 // ----------------------------------
 app.use('/share', ogRoute);
 
@@ -48,15 +47,28 @@ app.use(cors({
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ----------------------------------
-// Body parser  ← MUST come before routes
+// Body parser
 // ----------------------------------
 app.use(express.json());
 
 // ----------------------------------
-// Routes  (one mount per router)
+// Test Email Route (REMOVE AFTER TESTING)
+// ----------------------------------
+app.get('/test-email', async (req, res) => {
+  const { send2FACode } = require('./services/mailService');
+  try {
+    await send2FACode('lockercylon@gmail.com', '123456');
+    res.json({ message: 'Email sent! Check your inbox and spam.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Failed', error: err.message });
+  }
+});
+
+// ----------------------------------
+// Routes
 // ----------------------------------
 app.use('/api/admin',          adminRoutes);
-app.use('/api/posts/search',   postSearchRoutes);  // specific before generic
+app.use('/api/posts/search',   postSearchRoutes);
 app.use('/api/posts',          postRoutes);
 app.use('/api/tags',           tagRoutes);
 app.use('/api/categories',     categoryRoutes);
