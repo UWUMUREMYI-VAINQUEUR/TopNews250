@@ -18,6 +18,7 @@ const categoryRoutes     = require('./routes/categoryRoutes');
 const tagRoutes          = require('./routes/tagRoutes');
 const profileRoutes      = require('./routes/profileRoutes');
 const adminRoutes        = require('./routes/adminRoutes');
+const ogRoute = require('./routes/ogRoute');
 
 // ----------------------------------
 // CORS
@@ -39,6 +40,7 @@ app.use(cors({
 // Static uploads folder
 // ----------------------------------
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/share', ogRoute);
 
 // ----------------------------------
 // Body parser  ← MUST come before routes

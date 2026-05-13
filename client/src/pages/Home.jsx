@@ -126,9 +126,9 @@ const Home = () => {
     );
   };
 
-  /* SHARE */
+  /* SHARE — uses /share/post/:id so crawlers get OG meta tags */
   const handleShare = async (post) => {
-    const url = `${window.location.origin}/post/${post.id}`;
+    const url = `https://topnews250.com/share/post/${post.id}`;
     if (navigator.share) {
       await navigator.share({ title: post.title, text: post.snippet, url });
     } else {
