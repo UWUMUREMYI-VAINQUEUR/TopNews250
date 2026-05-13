@@ -17,11 +17,23 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 // ----------------------------------
+// Allowed Origins
+// ----------------------------------
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'https://www.topnews250.com',
+  'https://topnews250.com',
+  'https://topnews250.vercel.app',
+  'https://topnews-frontend.onrender.com',
+  'http://localhost:5173',
+].filter(Boolean);
+
+// ----------------------------------
 // Socket.IO
 // ----------------------------------
 const io = socketio(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
   },
