@@ -127,15 +127,15 @@ const Home = () => {
   };
 
   /* SHARE — uses /share/post/:id so crawlers get OG meta tags */
-  const handleShare = async (post) => {
-    const url = `https://topnews250.com/share/post/${post.id}`;
-    if (navigator.share) {
-      await navigator.share({ title: post.title, text: post.snippet, url });
-    } else {
-      navigator.clipboard.writeText(url);
-      alert('Link copied!');
-    }
-  };
+const handleShare = async (post) => {
+  const url = `https://topnews250.com/post/${post.id}`;
+  if (navigator.share) {
+    await navigator.share({ title: post.title, text: post.snippet, url });
+  } else {
+    navigator.clipboard.writeText(url);
+    alert('Link copied!');
+  }
+};
 
   const formatName = (name) =>
     name?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());

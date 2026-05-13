@@ -1,26 +1,19 @@
 {
   "rewrites": [
     {
-      "source": "/share/:path*",
-      "destination": "https://topnews250.onrender.com/share/:path*"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "redirects": [
-    {
       "source": "/post/:id",
       "has": [
         {
           "type": "header",
           "key": "user-agent",
-          "value": "(?i).*(facebookexternalhit|whatsapp|twitterbot|linkedinbot|slackbot|telegrambot|discordbot).*"
+          "value": "(?i).*(facebookexternalhit|whatsapp|twitterbot|linkedinbot|slackbot|telegrambot|discordbot|ia_archiver|vkshare).*"
         }
       ],
-      "destination": "https://topnews250.onrender.com/share/post/:id",
-      "permanent": false
+      "destination": "https://topnews250.onrender.com/share/post/:id"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
