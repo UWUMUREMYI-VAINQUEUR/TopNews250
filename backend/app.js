@@ -28,18 +28,28 @@ app.use('/share', ogRoute);
 // ----------------------------------
 // CORS
 // ----------------------------------
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.FRONTEND_URL_2,
+  'https://www.topnews250.com',
+  'https://topnews250.com',
+  'https://topnews250.vercel.app',
+  'https://topnews-frontend.onrender.com',
+  'http://localhost:5173',
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    process.env.FRONTEND_URL,
-    'https://www.topnews250.com',
-    'https://topnews250.com',
-    'https://topnews250.vercel.app',
-    'https://topnews-frontend.onrender.com',
-    'http://localhost:5173',
-  ].filter(Boolean),
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`CORS not allowed: ${origin}`));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
+
+// Handle preflight
+app.options('*', cors());
 
 // ----------------------------------
 // Static uploads folder
