@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const send2FACode = async (email, code) => {
   try {
     const { error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'TopNews <noreply@topnews250.com>',
       to: email,
       subject: 'Your Verification Code',
       html: `
