@@ -38,7 +38,7 @@ const allowedOrigins = [
   'http://localhost:5173',
 ].filter(Boolean);
 
-app.use(cors({
+const corsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
@@ -46,10 +46,9 @@ app.use(cors({
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
-}));
+};
 
-// Handle preflight
-app.options('*', cors());
+app.use(cors(corsOptions));
 
 // ----------------------------------
 // Static uploads folder
