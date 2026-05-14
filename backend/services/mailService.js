@@ -1,33 +1,30 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dotenv').config();
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const send2FACode = async (email, code) => {
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: 'Your Verification Code',
-    html: `
-      <div style="font-family: Arial, sans-serif; padding: 20px;">
-        <h2>TopNews Verification</h2>
-        <p>Your verification code is:</p>
-        <h1 style="color: #f97316; letter-spacing: 8px;">${code}</h1>
-        <p>This code expires in 10 minutes.</p>
-      </div>
-    `,
-  };
-
   try {
-    const info = await transporter.sendMail(mailOptions);
+    const { error } = await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: email,
+      subject: 'Your Verification Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+          <h2>TopNews Verification</h2>
+          <p>Your verification code is:</p>
+          <h1 style="color: #f97316; letter-spacing: 8px;">${code}</h1>
+          <p>This code expires in 10 minutes.</p>
+        </div>
+      `,
+    });
+
+    if (error) {
+      console.error('Resend error:', error);
+      throw new Error(error.message);
+    }
+
     console.log(`2FA code sent to ${email}`);
-    console.log('Email response:', info.response);
   } catch (err) {
     console.error('Error sending 2FA email:', err);
     throw err;
